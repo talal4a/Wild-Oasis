@@ -9,8 +9,9 @@ const StyledAppLayout = styled.div`
   height: 100vh;
 `;
 const Main = styled.main`
-  background-color: green;
+  background-color: var(--color-grey-0);
   padding: 4rem 4.8rem 6.4rem;
+  border-top: 1px solid var(--color-grey-100);
 `;
 export default function AppLayout() {
   return (
