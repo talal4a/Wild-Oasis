@@ -56,3 +56,4 @@ const Button = styled.button`
   box-shadow: var(--shadow-sm);
   cursor: pointer;
 `;
+export default Button;
