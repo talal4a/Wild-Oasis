@@ -21,19 +21,16 @@ const Img = styled.img`
   object-position: center;
   transform: scale(1.5) translateX(-7px);
 `;
-
 const Cabin = styled.div`
   font-size: 1.6rem;
   font-weight: 600;
   color: var(--color-grey-600);
   font-family: "Sono";
 `;
-
 const Price = styled.div`
   font-family: "Sono";
   font-weight: 600;
 `;
-
 const Discount = styled.div`
   font-family: "Sono";
   font-weight: 500;

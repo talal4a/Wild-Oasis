@@ -9,9 +9,9 @@ import PageNotFound from "./pages/PageNotFound";
 import Cabins from "./pages/Cabins";
 import GlobalStyle from "./styles/GlobalStyle";
 import AppLayout from "./ui/AppLayout";
-import { ReactQueryDevtools } from "./../node_modules/@tanstack/react-query-devtools/src/index";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "./../node_modules/react-hot-toast/src/components/toaster";
+import { Toaster } from "react-hot-toast";
 const queryClients = new QueryClient({
   defaultOptions: {
     queries: {

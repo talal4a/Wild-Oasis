@@ -13,13 +13,19 @@ const Main = styled.main`
   padding: 4rem 4.8rem 6.4rem;
   border-top: 1px solid var(--color-grey-100);
 `;
+const Container = styled.div`
+  max-width: 120rem;
+  margin: 0 auto;
+`;
 export default function AppLayout() {
   return (
     <StyledAppLayout>
       <Header />
       <Sidebar />
       <Main>
-        <Outlet />
+        <Container>
+          <Outlet />
+        </Container>
       </Main>
     </StyledAppLayout>
   );
