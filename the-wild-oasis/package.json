@@ -17,6 +17,7 @@
     "eslint-config-react-app": "^7.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.57.0",
     "react-hot-toast": "^2.5.2",
     "react-icon": "^1.0.0",
     "react-icons": "^5.5.0",

@@ -49,5 +49,8 @@ const Button = styled.button`
   border: none;
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-sm);
+  background-color: blue;
+  color: white;
+  height: 5rem;
 `;
 export default Button;
