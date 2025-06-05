@@ -9,9 +9,19 @@ import PageNotFound from "./pages/PageNotFound";
 import Cabins from "./pages/Cabins";
 import GlobalStyle from "./styles/GlobalStyle";
 import AppLayout from "./ui/AppLayout";
+import { ReactQueryDevtools } from "./../node_modules/@tanstack/react-query-devtools/src/index";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+const queryClients = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000,
+    },
+  },
+});
 export default function App() {
   return (
-    <>
+    <QueryClientProvider client={queryClients}>
+      <ReactQueryDevtools initialIsOpen={false} />
       <GlobalStyle />
       <BrowserRouter>
         <Routes>
@@ -28,6 +38,6 @@ export default function App() {
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </BrowserRouter>
-    </>
+    </QueryClientProvider>
   );
 }
