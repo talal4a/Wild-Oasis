@@ -43,7 +43,7 @@ export default function CabinRow({ cabin }) {
   const {
     id: cabinId,
     name,
-    maxCpacity,
+    maxCapcity,
     regularPrice,
     discount,
     image,
@@ -64,17 +64,17 @@ export default function CabinRow({ cabin }) {
       <TableRow role="row">
         <Img src={image}></Img>
         <Cabin>{name}</Cabin>
-        <div>Fits upto {maxCpacity} guests</div>
+        <div>Fits upto {maxCapcity} guests</div>
         <Price>{formatCurrency(regularPrice)}</Price>
         <Discount>{formatCurrency(discount)}</Discount>
         <div>
-          <button onClick={setShowForm((show) => !show)}>Edit</button>
+          <button onClick={() => setShowForm((show) => !show)}>Edit</button>
           <button onClick={() => mutate(cabinId)} disabled={isDeleting}>
             DELETE
           </button>
         </div>
       </TableRow>
-      {showForm && <CreateCabinForm />}
+      {showForm && <CreateCabinForm cabinToEdit={cabin} />}
     </>
   );
 }
