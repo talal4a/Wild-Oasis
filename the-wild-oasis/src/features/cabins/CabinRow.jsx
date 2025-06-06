@@ -63,9 +63,11 @@ export default function CabinRow({ cabin }) {
       <div>Fits upto {maxCpacity} guests</div>
       <Price>{formatCurrency(regularPrice)}</Price>
       <Discount>{formatCurrency(discount)}</Discount>
-      <button onClick={() => mutate(cabinId)} disabled={isDeleting}>
-        DELETE
-      </button>
+      <div>
+        <button onClick={() => mutate(cabinId)} disabled={isDeleting}>
+          DELETE
+        </button>
+      </div>
     </TableRow>
   );
 }
