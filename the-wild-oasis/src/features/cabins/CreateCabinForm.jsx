@@ -25,7 +25,6 @@ function CreateCabinForm({cabinToEdit}) {
       toast.error(err.message);
     },
   });
-
   function onSubmit(data) {
     mutate({ ...data, image: data.image[0] });
   }
