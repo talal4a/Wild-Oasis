@@ -4,16 +4,20 @@ import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
-import { createCabin } from "../../services/apiCabins";
+import { createEditCabin } from "../../services/apiCabins";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import FormRow from "../../ui/FormRow";
-function CreateCabinForm({cabinToEdit}) {
-  const { register, handleSubmit, reset, getValues, formState } = useForm();
+function CreateCabinForm({ cabinToEdit = {} }) {
+  const { id: editId, ...editValues } = cabinToEdit;
+  const isEditSession = Boolean(editId);
+  const { register, handleSubmit, reset, getValues, formState } = useForm({
+    defaultValues: isEditSession ? editValues : {},
+  });
   const { errors } = formState;
   const queryClient = useQueryClient();
   const { mutate, isLoading: isCreating } = useMutation({
-    mutationFn: createCabin,
+    mutationFn: createEditCabin,
     onSuccess: () => {
       toast.success("New cabin successfully created");
       queryClient.invalidateQueries({
@@ -68,7 +72,6 @@ function CreateCabinForm({cabinToEdit}) {
           })}
         />
       </FormRow>
-
       <FormRow label="Discount" error={errors?.discount?.message}>
         <Input
           type="number"
@@ -108,7 +111,7 @@ function CreateCabinForm({cabinToEdit}) {
           accept="image/*"
           type="File"
           {...register("image", {
-            required: "This field is required",
+            required: isEditSession ? false : "This field is required",
             min: {
               value: 1,
               message: "Capacity should at least 1",
@@ -120,7 +123,9 @@ function CreateCabinForm({cabinToEdit}) {
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
-        <Button disabled={isCreating}>Add cabin</Button>
+        <Button disabled={isCreating}>
+          {isEditSession ? "Edit Cabin" : "Create new cabin"}
+        </Button>
       </FormRow>
     </Form>
   );
