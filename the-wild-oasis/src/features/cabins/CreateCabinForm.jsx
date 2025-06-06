@@ -44,10 +44,11 @@ function CreateCabinForm({ cabinToEdit = {} }) {
   });
   const isWorking = isCreating || isEditing;
   function onSubmit(data) {
+    const image = typeof data.image === "string" ? data.image : data.image[0];
     if (isEditSession) {
-      editCabin();
+      editCabin({ newCabinData: { ...data, image }, id: editId });
     } else {
-      createCabin({ ...data, image: data.image[0] });
+      createCabin({ ...data, image: image });
     }
   }
   return (
@@ -104,7 +105,6 @@ function CreateCabinForm({ cabinToEdit = {} }) {
           })}
         />
       </FormRow>
-
       <FormRow
         label="Description for website"
         error={errors?.description?.message}
@@ -148,5 +148,4 @@ function CreateCabinForm({ cabinToEdit = {} }) {
     </Form>
   );
 }
-
 export default CreateCabinForm;
