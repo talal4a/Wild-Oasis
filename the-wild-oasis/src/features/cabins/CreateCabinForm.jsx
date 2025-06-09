@@ -7,38 +7,41 @@ import { useForm } from "react-hook-form";
 import FormRow from "../../ui/FormRow";
 import useCreateCabin from "./useCreateCabin";
 import useEditCabin from "./useEditCabin";
+
 function CreateCabinForm({ cabinToEdit = {} }) {
   const { id: editId, ...editValues } = cabinToEdit;
   const isEditSession = Boolean(editId);
+
   const { register, handleSubmit, reset, getValues, formState } = useForm({
     defaultValues: isEditSession ? editValues : {},
   });
+
   const { errors } = formState;
+
   const { isCreating, createCabin } = useCreateCabin();
   const { isEditing, editCabin } = useEditCabin();
   const isWorking = isCreating || isEditing;
+
   function onSubmit(data) {
-    const image = typeof data.image === "string" ? data.image : data.image[0];
+    const image = typeof data.image === "string" ? data.image : data.image?.[0];
+
     if (isEditSession) {
       editCabin(
         { newCabinData: { ...data, image }, id: editId },
         {
-          onSuccess: (data) => {
-            reset();
-          },
+          onSuccess: () => reset(),
         }
       );
     } else {
       createCabin(
-        { ...data, image: image },
+        { ...data, image },
         {
-          onSuccess: (data) => {
-            reset();
-          },
+          onSuccess: () => reset(),
         }
       );
     }
   }
+
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       <FormRow label="Cabin name" error={errors?.name?.message}>
@@ -51,6 +54,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
           })}
         />
       </FormRow>
+
       <FormRow label="Maximum capacity" error={errors?.maxCapacity?.message}>
         <Input
           type="number"
@@ -60,11 +64,12 @@ function CreateCabinForm({ cabinToEdit = {} }) {
             required: "This field is required",
             min: {
               value: 1,
-              message: "Capacity should at least 1",
+              message: "Capacity should be at least 1",
             },
           })}
         />
       </FormRow>
+
       <FormRow label="Regular price" error={errors?.regularPrice?.message}>
         <Input
           type="number"
@@ -74,11 +79,12 @@ function CreateCabinForm({ cabinToEdit = {} }) {
             required: "This field is required",
             min: {
               value: 1,
-              message: "Capacity should at least 1",
+              message: "Price should be at least 1",
             },
           })}
         />
       </FormRow>
+
       <FormRow label="Discount" error={errors?.discount?.message}>
         <Input
           type="number"
@@ -89,41 +95,41 @@ function CreateCabinForm({ cabinToEdit = {} }) {
             required: "This field is required",
             validate: (value) =>
               value <= getValues().regularPrice ||
-              "Discount should be less then regular price",
+              "Discount should be less than regular price",
           })}
         />
       </FormRow>
+
       <FormRow
         label="Description for website"
         error={errors?.description?.message}
       >
         <Textarea
-          type="number"
           id="description"
           disabled={isWorking}
-          defaultValue=""
           {...register("description", {
             required: "This field is required",
-            min: {
-              value: 1,
-              message: "Capacity should at least 1",
+            minLength: {
+              value: 10,
+              message: "Description should be at least 10 characters long",
             },
           })}
         />
       </FormRow>
-      <FormRow label="Cabin photo">
-        {isEditSession && editValues.image && (
-          <FileInput
-            id="image"
-            accept="image/*"
-            type="File"
-            {...register("image", {
-              required: isEditSession ? false : "This field is required",
-            })}
-          />
-        )}
+
+      <FormRow label="Cabin photo" error={errors?.image?.message}>
+        <FileInput
+          id="image"
+          accept="image/*"
+          type="file"
+          disabled={isWorking}
+          {...register("image", {
+            required: !isEditSession ? "This field is required" : false,
+          })}
+        />
       </FormRow>
-      <FormRow>
+
+      <FormRow type="buttons">
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
@@ -134,4 +140,5 @@ function CreateCabinForm({ cabinToEdit = {} }) {
     </Form>
   );
 }
+
 export default CreateCabinForm;
