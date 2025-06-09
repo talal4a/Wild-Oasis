@@ -1,5 +1,4 @@
 import styled, { css } from "styled-components";
-
 // Size variants
 const sizes = {
   small: css`
@@ -20,7 +19,6 @@ const sizes = {
     font-weight: 500;
   `,
 };
-
 // Color variants
 const variations = {
   primary: css`
@@ -68,5 +66,4 @@ const Button = styled.button`
 
   height: ${(props) => (props.size === "small" ? "auto" : "5rem")};
 `;
-
 export default Button;
