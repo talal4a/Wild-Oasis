@@ -63,7 +63,6 @@ const Button = styled.button`
       width: 100%;
       display: block;
     `}
-
   height: ${(props) => (props.size === "small" ? "auto" : "5rem")};
 `;
 export default Button;
