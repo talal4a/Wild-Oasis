@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 
-// Button size variants
+// Size variants
 const sizes = {
   small: css`
     font-size: 1.2rem;
@@ -10,7 +10,7 @@ const sizes = {
     text-align: center;
   `,
   medium: css`
-    font-size: 1.3rem; /* ✅ Slightly reduced to avoid layout issues */
+    font-size: 1.3rem;
     padding: 1.2rem 1.6rem;
     font-weight: 500;
   `,
@@ -21,7 +21,7 @@ const sizes = {
   `,
 };
 
-// Button color styles
+// Color variants
 const variations = {
   primary: css`
     color: var(--color-brand-50);
@@ -56,10 +56,17 @@ const Button = styled.button`
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-sm);
   cursor: pointer;
-  height: 5rem;
   transition: all 0.2s ease;
   ${(props) => sizes[props.size || "medium"]};
   ${(props) => variations[props.variation || "primary"]};
+  ${(props) =>
+    props.fullWidth &&
+    css`
+      width: 100%;
+      display: block;
+    `}
+
+  height: ${(props) => (props.size === "small" ? "auto" : "5rem")};
 `;
 
 export default Button;
