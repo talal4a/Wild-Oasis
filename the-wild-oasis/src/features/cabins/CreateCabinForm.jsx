@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import FormRow from "../../ui/FormRow";
 import useCreateCabin from "./useCreateCabin";
 import useEditCabin from "./useEditCabin";
-function CreateCabinForm({ cabinToEdit = {}, isCloseModel }) {
+function CreateCabinForm({ cabinToEdit = {}, onCloseModel }) {
   const { id: editId, ...editValues } = cabinToEdit;
   const isEditSession = Boolean(editId);
 
@@ -26,7 +26,7 @@ function CreateCabinForm({ cabinToEdit = {}, isCloseModel }) {
         {
           onSuccess: () => {
             reset();
-            isCloseModel?.();
+            onCloseModel?.();
           },
         }
       );
@@ -36,7 +36,7 @@ function CreateCabinForm({ cabinToEdit = {}, isCloseModel }) {
         {
           onSuccess: () => {
             reset();
-            isCloseModel?.();
+            onCloseModel?.();
           },
         }
       );
@@ -47,7 +47,7 @@ function CreateCabinForm({ cabinToEdit = {}, isCloseModel }) {
       <FormRow
         label="Cabin name"
         error={errors?.name?.message}
-        type={isCloseModel ? "modal" : "regular"}
+        type={onCloseModel ? "modal" : "regular"}
       >
         <Input
           type="text"
@@ -124,7 +124,7 @@ function CreateCabinForm({ cabinToEdit = {}, isCloseModel }) {
           variation="secondary"
           type="reset"
           onClick={() => {
-            isCloseModel();
+            onCloseModel();
           }}
         >
           Cancel
