@@ -11,24 +11,18 @@ const ButtonStack = styled.div`
 `;
 export default function ADDCabin() {
   return (
-    <Modal>
-      <ButtonStack>
-        <Modal.Open opens="cabin-form">
-          <Button fullWidth>Add new Cabin</Button>
-        </Modal.Open>
-      </ButtonStack>
-      <Modal.Window name="cabin-form">
-        <CreateCabinForm />
-      </Modal.Window>
-      <ButtonStack>
-        <Modal.Open opens="table">
-          <Button fullWidth>Show table</Button>
-        </Modal.Open>
-      </ButtonStack>
-      <Modal.Window name="table">
-        <CabinTable />
-      </Modal.Window>
-    </Modal>
+    <div>
+      <Modal>
+        <ButtonStack>
+          <Modal.Open opens="cabin-form">
+            <Button fullwidth="true">Add new Cabin</Button>
+          </Modal.Open>
+        </ButtonStack>
+        <Modal.Window name="cabin-form">
+          <CreateCabinForm />
+        </Modal.Window>
+      </Modal>
+    </div>
   );
 }
 // export default function AddCabin() {
