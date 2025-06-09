@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import FormRow from "../../ui/FormRow";
 import useCreateCabin from "./useCreateCabin";
 import useEditCabin from "./useEditCabin";
-
 function CreateCabinForm({ cabinToEdit = {}, isCloseModel }) {
   const { id: editId, ...editValues } = cabinToEdit;
   const isEditSession = Boolean(editId);
@@ -15,16 +14,12 @@ function CreateCabinForm({ cabinToEdit = {}, isCloseModel }) {
   const { register, handleSubmit, reset, getValues, formState } = useForm({
     defaultValues: isEditSession ? editValues : {},
   });
-
   const { errors } = formState;
-
   const { isCreating, createCabin } = useCreateCabin();
   const { isEditing, editCabin } = useEditCabin();
   const isWorking = isCreating || isEditing;
-
   function onSubmit(data) {
     const image = typeof data.image === "string" ? data.image : data.image?.[0];
-
     if (isEditSession) {
       editCabin(
         { newCabinData: { ...data, image }, id: editId },
@@ -61,7 +56,6 @@ function CreateCabinForm({ cabinToEdit = {}, isCloseModel }) {
           {...register("name", { required: "This field is required" })}
         />
       </FormRow>
-
       <FormRow label="Maximum capacity" error={errors?.maxCapacity?.message}>
         <Input
           type="number"
@@ -73,7 +67,6 @@ function CreateCabinForm({ cabinToEdit = {}, isCloseModel }) {
           })}
         />
       </FormRow>
-
       <FormRow label="Regular price" error={errors?.regularPrice?.message}>
         <Input
           type="number"
@@ -85,7 +78,6 @@ function CreateCabinForm({ cabinToEdit = {}, isCloseModel }) {
           })}
         />
       </FormRow>
-
       <FormRow label="Discount" error={errors?.discount?.message}>
         <Input
           type="number"
@@ -100,7 +92,6 @@ function CreateCabinForm({ cabinToEdit = {}, isCloseModel }) {
           })}
         />
       </FormRow>
-
       <FormRow
         label="Description for website"
         error={errors?.description?.message}
