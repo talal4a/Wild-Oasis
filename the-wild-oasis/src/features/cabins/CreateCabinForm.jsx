@@ -121,7 +121,7 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModel }) {
       </FormRow>
       <FormRow type="buttons">
         <Button
-          variation="secondary"
+          variation="primary"
           type="reset"
           onClick={() => {
             onCloseModel();

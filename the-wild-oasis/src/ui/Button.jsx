@@ -58,7 +58,6 @@ const Button = styled.button`
   cursor: pointer;
   height: 5rem;
   transition: all 0.2s ease;
-
   ${(props) => sizes[props.size || "medium"]};
   ${(props) => variations[props.variation || "primary"]};
 `;
