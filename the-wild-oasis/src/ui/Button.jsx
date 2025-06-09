@@ -47,22 +47,23 @@ const variations = {
     }
   `,
 };
-
 // Final styled button
+
 const Button = styled.button`
   border: none;
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-sm);
   cursor: pointer;
   transition: all 0.2s ease;
+  height: ${(props) => (props.size === "small" ? "auto" : "5rem")};
   ${(props) => sizes[props.size || "medium"]};
   ${(props) => variations[props.variation || "primary"]};
   ${(props) =>
-    props.fullWidth &&
+    props.fullwidth &&
     css`
       width: 100%;
       display: block;
     `}
-  height: ${(props) => (props.size === "small" ? "auto" : "5rem")};
 `;
+
 export default Button;
