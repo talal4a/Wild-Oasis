@@ -8,7 +8,7 @@ import FormRow from "../../ui/FormRow";
 import useCreateCabin from "./useCreateCabin";
 import useEditCabin from "./useEditCabin";
 
-function CreateCabinForm({ cabinToEdit = {} }) {
+function CreateCabinForm({ cabinToEdit = {}, isCloseModel }) {
   const { id: editId, ...editValues } = cabinToEdit;
   const isEditSession = Boolean(editId);
 
@@ -29,29 +29,36 @@ function CreateCabinForm({ cabinToEdit = {} }) {
       editCabin(
         { newCabinData: { ...data, image }, id: editId },
         {
-          onSuccess: () => reset(),
+          onSuccess: () => {
+            reset();
+            isCloseModel?.();
+          },
         }
       );
     } else {
       createCabin(
         { ...data, image },
         {
-          onSuccess: () => reset(),
+          onSuccess: () => {
+            reset();
+            isCloseModel?.();
+          },
         }
       );
     }
   }
-
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <FormRow label="Cabin name" error={errors?.name?.message}>
+      <FormRow
+        label="Cabin name"
+        error={errors?.name?.message}
+        type={isCloseModel ? "modal" : "regular"}
+      >
         <Input
           type="text"
           id="name"
           disabled={isWorking}
-          {...register("name", {
-            required: "This field is required",
-          })}
+          {...register("name", { required: "This field is required" })}
         />
       </FormRow>
 
@@ -62,10 +69,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
           disabled={isWorking}
           {...register("maxCapacity", {
             required: "This field is required",
-            min: {
-              value: 1,
-              message: "Capacity should be at least 1",
-            },
+            min: { value: 1, message: "Capacity should be at least 1" },
           })}
         />
       </FormRow>
@@ -77,10 +81,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
           disabled={isWorking}
           {...register("regularPrice", {
             required: "This field is required",
-            min: {
-              value: 1,
-              message: "Price should be at least 1",
-            },
+            min: { value: 1, message: "Price should be at least 1" },
           })}
         />
       </FormRow>
@@ -116,7 +117,6 @@ function CreateCabinForm({ cabinToEdit = {} }) {
           })}
         />
       </FormRow>
-
       <FormRow label="Cabin photo" error={errors?.image?.message}>
         <FileInput
           id="image"
@@ -128,9 +128,14 @@ function CreateCabinForm({ cabinToEdit = {} }) {
           })}
         />
       </FormRow>
-
       <FormRow type="buttons">
-        <Button variation="secondary" type="reset">
+        <Button
+          variation="secondary"
+          type="reset"
+          onClick={() => {
+            isCloseModel();
+          }}
+        >
           Cancel
         </Button>
         <Button disabled={isWorking}>
@@ -140,5 +145,4 @@ function CreateCabinForm({ cabinToEdit = {} }) {
     </Form>
   );
 }
-
 export default CreateCabinForm;

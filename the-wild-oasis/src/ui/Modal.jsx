@@ -1,3 +1,4 @@
+// Modal.jsx
 import { HiXMark } from "react-icons/hi2";
 import styled from "styled-components";
 
@@ -11,6 +12,7 @@ const StyledModal = styled.div`
   box-shadow: var(--shadow-lg);
   padding: 3.2rem 4rem;
   transition: all 0.5s;
+  z-index: 1001;
 `;
 
 const Overlay = styled.div`
@@ -43,16 +45,14 @@ const Button = styled.button`
   & svg {
     width: 2.4rem;
     height: 2.4rem;
-    /* Sometimes we need both */
-    /* fill: var(--color-grey-500);
-    stroke: var(--color-grey-500); */
     color: var(--color-grey-500);
   }
 `;
+
 export default function Modal({ children, isClose }) {
   return (
-    <Overlay>
-      <StyledModal>
+    <Overlay onClick={isClose}>
+      <StyledModal onClick={(e) => e.stopPropagation()}>
         <Button onClick={isClose}>
           <HiXMark />
         </Button>
