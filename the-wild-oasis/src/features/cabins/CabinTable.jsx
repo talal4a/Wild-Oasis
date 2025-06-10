@@ -3,7 +3,6 @@ import Spinner from "./../../ui/Spinner";
 import CabinRow from "./CabinRow";
 import useCabin from "./useCabin";
 import Table from "./../../ui/Table";
-import { cabins } from "./../../data/data-cabins";
 const TableHeader = styled.header`
   display: grid;
   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
