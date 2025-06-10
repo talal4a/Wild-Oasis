@@ -32,9 +32,11 @@ export default function CabinTable() {
         <div>Discount</div>
         <div></div>
       </Table.Header>
-      {cabin.map((cabin) => (
-        <CabinRow cabin={cabin} key={cabin.id} />
-      ))}
+      <Table.Body>
+        {cabin.map((cabin) => (
+          <CabinRow cabin={cabin} key={cabin.id} />
+        ))}
+      </Table.Body>
     </Table>
   );
 }

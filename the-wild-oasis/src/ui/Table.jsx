@@ -84,7 +84,7 @@ function Row({ children }) {
     </StyledRow>
   );
 }
-function Body() {}
+function Body({children}) {}
 Table.Header = Header;
 Table.Row = Row;
 Table.Body = Body;
