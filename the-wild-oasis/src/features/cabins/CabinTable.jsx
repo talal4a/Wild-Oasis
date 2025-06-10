@@ -34,9 +34,7 @@ export default function CabinTable() {
       </Table.Header>
       <Table.Body
         data={cabin}
-        render={(cabin) => {
-          <CabinRow cabin={cabin} key={cabin.id} />;
-        }}
+        render={(cabin) => <CabinRow cabin={cabin} key={cabin.id} />}
       />
     </Table>
   );
