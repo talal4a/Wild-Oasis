@@ -3,7 +3,7 @@ import Spinner from "./../../ui/Spinner";
 import CabinRow from "./CabinRow";
 import useCabin from "./useCabin";
 import Table from "./../../ui/Table";
-
+import { cabins } from "./../../data/data-cabins";
 const TableHeader = styled.header`
   display: grid;
   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
@@ -18,7 +18,7 @@ const TableHeader = styled.header`
   padding: 1.6rem 2.4rem;
 `;
 export default function CabinTable() {
-  const { isLoading, cabin, error } = useCabin();
+  const { isLoading, cabin } = useCabin();
   if (isLoading) {
     return <Spinner />;
   }
@@ -32,11 +32,12 @@ export default function CabinTable() {
         <div>Discount</div>
         <div></div>
       </Table.Header>
-      <Table.Body>
-        {cabin.map((cabin) => (
-          <CabinRow cabin={cabin} key={cabin.id} />
-        ))}
-      </Table.Body>
+      <Table.Body
+        data={cabin}
+        render={(cabin) => {
+          <CabinRow cabin={cabin} key={cabin.id} />;
+        }}
+      />
     </Table>
   );
 }
