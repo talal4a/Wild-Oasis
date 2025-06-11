@@ -20,9 +20,12 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModel }) {
   const isWorking = isCreating || isEditing;
   function onSubmit(data) {
     const image = typeof data.image === "string" ? data.image : data.image?.[0];
+    // Ensure discount is a number, default to 0 if empty
+    const discount = data.discount === "" || data.discount === undefined ? 0 : Number(data.discount);
+    const cabinData = { ...data, image, discount };
     if (isEditSession) {
       editCabin(
-        { newCabinData: { ...data, image }, id: editId },
+        { newCabinData: cabinData, id: editId },
         {
           onSuccess: () => {
             toast.success("New cabin successfully edited");
@@ -33,7 +36,7 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModel }) {
       );
     } else {
       createCabin(
-        { ...data, image },
+        { ...cabinData },
         {
           onSuccess: () => {
             reset();
@@ -86,9 +89,8 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModel }) {
           disabled={isWorking}
           defaultValue={0}
           {...register("discount", {
-            required: "This field is required",
             validate: (value) =>
-              value <= getValues().regularPrice ||
+              value === "" || Number(value) <= getValues().regularPrice ||
               "Discount should be less than regular price",
           })}
         />
