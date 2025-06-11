@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import FormRow from "../../ui/FormRow";
 import useCreateCabin from "./useCreateCabin";
 import useEditCabin from "./useEditCabin";
+import { toast } from "react-hot-toast";
 function CreateCabinForm({ cabinToEdit = {}, onCloseModel }) {
   const { id: editId, ...editValues } = cabinToEdit;
   const isEditSession = Boolean(editId);
@@ -24,6 +25,7 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModel }) {
         { newCabinData: { ...data, image }, id: editId },
         {
           onSuccess: () => {
+            toast.success("New cabin successfully edited");
             reset();
             onCloseModel?.();
           },

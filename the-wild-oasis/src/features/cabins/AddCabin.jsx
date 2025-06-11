@@ -1,7 +1,6 @@
 import Button from "../../ui/Button";
 import CreateCabinForm from "./CreateCabinForm";
 import Modal from "../../ui/Modal";
-import CabinTable from "./CabinTable";
 import styled from "styled-components";
 const ButtonStack = styled.div`
   display: flex;
