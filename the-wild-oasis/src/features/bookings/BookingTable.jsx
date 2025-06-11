@@ -4,11 +4,22 @@ import Menus from "../../ui/Menus";
 import Empty from "./../../ui/Empty";
 import useBookings from "./useBookings";
 import Spinner from "./../../ui/Spinner";
+import { guests } from "../../data/data-guests";
 
 function BookingTable() {
   const { bookings, isLoading } = useBookings();
   if (isLoading) return <Spinner />;
   if (!bookings.length) return <Empty resourceName="Booking" />;
+
+  // Join bookings and guests in memory
+  const bookingsWithGuest = bookings.map(booking => {
+    const guest = guests.find(g => g.id === booking.guestId);
+    return {
+      ...booking,
+      guests: guest || {},
+    };
+  });
+
   return (
     <Menus>
       <Table columns="0.6fr 2fr 2.4fr 1.4fr 1fr 3.2rem">
@@ -21,7 +32,7 @@ function BookingTable() {
           <div></div>
         </Table.Header>
         <Table.Body
-          data={bookings}
+          data={bookingsWithGuest}
           render={(booking) => (
             <BookingRow key={booking.id} booking={booking} />
           )}
