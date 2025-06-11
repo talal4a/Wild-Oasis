@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { isFuture, isPast, isToday } from "date-fns";
-import supabase from "../services/supabase";
+
 import Button from "../ui/Button";
 import { subtractDates } from "../utils/helpers";
 
 import { bookings } from "./data-bookings";
 import { cabins } from "./data-cabins";
 import { guests } from "./data-guests";
+import supabase from "../services/supaBase";
 
 // const originalSettings = {
 //   minBookingLength: 3,
