@@ -4,14 +4,12 @@ import Tag from "../../ui/Tag";
 import Table from "../../ui/Table";
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
-
 const Cabin = styled.div`
   font-size: 1.6rem;
   font-weight: 600;
   color: var(--color-grey-600);
   font-family: "Sono";
 `;
-
 const Stacked = styled.div`
   display: flex;
   flex-direction: column;
