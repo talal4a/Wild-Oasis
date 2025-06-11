@@ -1,5 +1,6 @@
 import { getToday } from "../utils/helpers";
 import supabase from "./supaBase";
+import { bookings } from "../data/data-bookings";
 
 export async function getBookings() {
   const { data, error } = await supabase
@@ -106,4 +107,38 @@ export async function deleteBooking(id) {
     throw new Error("Booking could not be deleted");
   }
   return data;
+}
+
+export async function createBookings() {
+  // Fetch all guests with their emails and IDs
+  const { data: guestsData } = await supabase
+    .from("guests")
+    .select("id, email");
+
+  // Fetch all cabins with their names and IDs (if needed)
+  const { data: cabinsData } = await supabase
+    .from("cabins")
+    .select("id, name");
+
+  const finalBookings = bookings.map((booking) => {
+    // Find the guest by email (assuming your mock data has guestEmail)
+    const guest = guestsData.find(g => g.email === booking.guestEmail);
+    // Find the cabin by name or other unique field if needed
+    // const cabin = cabinsData.find(c => c.name === booking.cabinName);
+
+    // ...calculate numNights, prices, status as before...
+
+    return {
+      ...booking,
+      guestId: guest ? guest.id : null,
+      // cabinId: cabin ? cabin.id : null,
+      // ...other fields...
+    };
+  });
+
+  // Filter out bookings with missing guestId (optional, for safety)
+  const validBookings = finalBookings.filter(b => b.guestId);
+
+  const { error } = await supabase.from("bookings").insert(validBookings);
+  if (error) console.log(error.message);
 }
