@@ -14,17 +14,14 @@ const Stacked = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-
   & span:first-child {
     font-weight: 500;
   }
-
   & span:last-child {
     color: var(--color-grey-500);
     font-size: 1.2rem;
   }
 `;
-
 const Amount = styled.div`
   font-family: "Sono";
   font-weight: 500;
