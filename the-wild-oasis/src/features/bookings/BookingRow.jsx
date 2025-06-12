@@ -27,9 +27,6 @@ const Amount = styled.div`
   font-weight: 500;
 `;
 function BookingRow({ booking }) {
-  // Log the booking object to debug
-  console.log("BookingRow received:", booking);
-
   const {
     id: bookingId,
     created_at,
@@ -43,16 +40,10 @@ function BookingRow({ booking }) {
     cabins,
   } = booking;
   
-  // Debug the guest data specifically
-  console.log("Guest data:", guests);
-  
   // These are now guaranteed to be objects with the right properties
   const guestName = guests?.fullName || "Unknown guest";
   const email = guests?.email || "-";
   const cabinName = cabins?.name || "Unknown cabin";
-  
-  // Debug the extracted values
-  console.log("Extracted values:", { guestName, email, cabinName });
   
   const statusToTagName = {
     unconfirmed: "blue",

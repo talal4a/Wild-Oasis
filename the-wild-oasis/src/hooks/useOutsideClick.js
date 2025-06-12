@@ -8,7 +8,6 @@ export default function useOutsideClick({
 
   useEffect(() => {
     function handleClick(e) {
-      console.log("clicked on", e.target);
       if (ref.current && !ref.current.contains(e.target)) {
         handler();
       }

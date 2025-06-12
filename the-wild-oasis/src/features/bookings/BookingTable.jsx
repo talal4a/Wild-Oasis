@@ -15,14 +15,12 @@ function BookingTable() {
 
   // Process bookings to ensure guest data is in the correct format
   const processedBookings = bookings.map(booking => {
-    // Log the raw booking data to see its structure
-    console.log("Raw booking:", booking);
-    
     // Try to find the guest by ID from the mock data
     // This is a fallback if the API join doesn't work
     const mockGuest = booking.guestId 
       ? mockGuests.find((_, index) => index + 1 === booking.guestId) 
       : null;
+    
     // Handle different possible structures of guest data
     let guestData = booking.guests;
     
