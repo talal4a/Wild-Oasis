@@ -2,38 +2,55 @@ import { getToday } from "../utils/helpers";
 import supabase from "./supaBase";
 import { bookings } from "../data/data-bookings";
 import { guests as mockGuests } from "../data/data-guests";
-export async function getBookings({ filter, sortBy }) {
+export async function getBookings({ filter, sortBy } = {}) {
   let query = supabase.from("bookings").select("*, cabins(*), guests(*)");
-  if (filter) query = query.eq(filter.field, filter.value);
-  if (sortBy) query = query.order[sortBy.field];
+  
+  // Apply filter if provided
+  if (filter) {
+    query = query.eq(filter.field, filter.value);
+  }
+  
+  // Apply sorting if provided
+  if (sortBy) {
+    const { field, direction } = sortBy;
+    query = query.order(field, { ascending: direction === "asc" });
+  }
+  
   const { data, error } = await query;
+  
   if (error) {
+    console.error("Error fetching bookings:", error);
     throw new Error("Bookings could not be loaded");
   }
+  
   // If we have data but the guest information is missing, add it from mock data
   if (data && data.length > 0) {
     const enhancedData = data.map((booking) => {
-      // If guest data is missing or incomplete, use mock data based on guestId
-      if (
-        !booking.guests ||
-        (Array.isArray(booking.guests) && booking.guests.length === 0)
-      ) {
-        const mockGuest =
-          booking.guestId && booking.guestId <= mockGuests.length
-            ? mockGuests[booking.guestId - 1]
-            : null;
-
-        if (mockGuest) {
-          booking.guests = mockGuest;
-        }
+      // Process guests data
+      if (Array.isArray(booking.guests) && booking.guests.length > 0) {
+        booking.guests = booking.guests[0];
+      } else if (!booking.guests || Object.keys(booking.guests).length === 0) {
+        const mockGuest = booking.guestId && booking.guestId <= mockGuests.length
+          ? mockGuests[booking.guestId - 1]
+          : { fullName: "Unknown Guest", email: "-" };
+        
+        booking.guests = mockGuest;
       }
+      
+      // Process cabins data
+      if (Array.isArray(booking.cabins) && booking.cabins.length > 0) {
+        booking.cabins = booking.cabins[0];
+      } else if (!booking.cabins || Object.keys(booking.cabins).length === 0) {
+        booking.cabins = { name: `Cabin ${booking.cabinId || "Unknown"}` };
+      }
+      
       return booking;
     });
-
+    
     return enhancedData;
   }
-
-  return data;
+  
+  return data || [];
 }
 
 export async function getBooking(id) {
@@ -42,8 +59,34 @@ export async function getBooking(id) {
     .select("*, cabins(*), guests(*)")
     .eq("id", id)
     .single();
+    
   if (error) {
+    console.error("Error fetching booking:", error);
     throw new Error("Booking not found");
+  }
+
+  // Process the data to ensure consistent structure
+  if (data) {
+    // Handle guests data
+    if (Array.isArray(data.guests) && data.guests.length > 0) {
+      data.guests = data.guests[0];
+    } else if (!data.guests) {
+      // Try to find a guest from mock data
+      const mockGuest = data.guestId && data.guestId <= mockGuests.length
+        ? mockGuests[data.guestId - 1]
+        : { fullName: "Unknown Guest", email: "-" };
+      
+      data.guests = mockGuest;
+    }
+    
+    // Handle cabins data
+    if (Array.isArray(data.cabins) && data.cabins.length > 0) {
+      data.cabins = data.cabins[0];
+    } else if (!data.cabins) {
+      data.cabins = { name: `Cabin ${data.cabinId || "Unknown"}` };
+    }
+    
+    console.log("Processed booking data:", data);
   }
 
   return data;

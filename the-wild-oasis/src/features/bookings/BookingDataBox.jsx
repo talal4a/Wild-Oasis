@@ -103,21 +103,37 @@ const Footer = styled.footer`
 
 // A purely presentational component
 function BookingDataBox({ booking }) {
+  // Early return if booking is not available
+  if (!booking) return null;
+  
+  // Safely extract data with defaults for missing values
   const {
     created_at,
     startDate,
     endDate,
-    numNights,
-    numGuests,
-    cabinPrice,
-    extrasPrice,
-    totalPrice,
-    hasBreakfast,
-    observations,
-    isPaid,
-    guests: { fullName: guestName, email, country, countryFlag, nationalID },
-    cabins: { name: cabinName },
+    numNights = 0,
+    numGuests = 1,
+    cabinPrice = 0,
+    extrasPrice = 0,
+    totalPrice = 0,
+    hasBreakfast = false,
+    observations = "",
+    isPaid = false,
+    guests = {},
+    cabins = {},
   } = booking;
+  
+  // Extract guest data with defaults
+  const {
+    fullName: guestName = "Guest",
+    email = "-",
+    country = "",
+    countryFlag = "",
+    nationalID = "-"
+  } = guests || {};
+  
+  // Extract cabin data with defaults
+  const { name: cabinName = "Unknown Cabin" } = cabins || {};
 
   return (
     <StyledBookingDataBox>
@@ -130,11 +146,17 @@ function BookingDataBox({ booking }) {
         </div>
 
         <p>
-          {format(new Date(startDate), "EEE, MMM dd yyyy")} (
-          {isToday(new Date(startDate))
-            ? "Today"
-            : formatDistanceFromNow(startDate)}
-          ) &mdash; {format(new Date(endDate), "EEE, MMM dd yyyy")}
+          {startDate ? (
+            <>
+              {format(new Date(startDate), "EEE, MMM dd yyyy")} (
+              {isToday(new Date(startDate))
+                ? "Today"
+                : formatDistanceFromNow(startDate)}
+              ) &mdash; {format(new Date(endDate), "EEE, MMM dd yyyy")}
+            </>
+          ) : (
+            "Dates not available"
+          )}
         </p>
       </Header>
 
@@ -178,7 +200,12 @@ function BookingDataBox({ booking }) {
       </Section>
 
       <Footer>
-        <p>Booked {format(new Date(created_at), "EEE, MMM dd yyyy, p")}</p>
+        <p>
+          {created_at 
+            ? `Booked ${format(new Date(created_at), "EEE, MMM dd yyyy, p")}`
+            : "Booking date not available"
+          }
+        </p>
       </Footer>
     </StyledBookingDataBox>
   );
