@@ -43,16 +43,13 @@ function BookingDetail() {
         </HeadingGroup>
         <ButtonText onClick={moveBack}>&larr; Back</ButtonText>
       </Row>
-
       <BookingDataBox booking={booking} />
-
       <ButtonGroup>
         {status === "unconfirmed" && (
           <Button onClick={() => navigate(`/checkin/${bookingId}`)}>
             Check in
           </Button>
         )}
-
         <Button variation="secondary" onClick={moveBack}>
           Back
         </Button>
@@ -60,5 +57,4 @@ function BookingDetail() {
     </>
   );
 }
-
 export default BookingDetail;
