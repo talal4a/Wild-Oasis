@@ -1,18 +1,49 @@
 import { getToday } from "../utils/helpers";
 import supabase from "./supaBase";
 import { bookings } from "../data/data-bookings";
+import { guests as mockGuests } from "../data/data-guests";
+
 export async function getBookings() {
-  const { data, error } = await supabase
-    .from("bookings")
-    .select(
-      "id,created_at,startDate,endDate,numNights,numGuests,status,totalPrice,cabins(name),guests(fullName,email)"
-    );
-  if (error) {
-    console.error(error);
-    throw new Error("Bookings could not be loaded");
+  try {
+    // First try to get bookings with joined data
+    const { data, error } = await supabase
+      .from("bookings")
+      .select("*, cabins(*), guests(*)");
+
+    if (error) {
+      console.error("Error fetching bookings:", error);
+      throw new Error("Bookings could not be loaded");
+    }
+
+    console.log("Raw data from Supabase:", data);
+
+    // If we have data but the guest information is missing, add it from mock data
+    if (data && data.length > 0) {
+      const enhancedData = data.map(booking => {
+        // If guest data is missing or incomplete, use mock data based on guestId
+        if (!booking.guests || (Array.isArray(booking.guests) && booking.guests.length === 0)) {
+          const mockGuest = booking.guestId && booking.guestId <= mockGuests.length 
+            ? mockGuests[booking.guestId - 1] 
+            : null;
+          
+          if (mockGuest) {
+            booking.guests = mockGuest;
+          }
+        }
+        return booking;
+      });
+      
+      console.log("Enhanced data:", enhancedData);
+      return enhancedData;
+    }
+    
+    return data;
+  } catch (error) {
+    console.error("Error in getBookings:", error);
+    throw error;
   }
-  return data;
 }
+
 export async function getBooking(id) {
   const { data, error } = await supabase
     .from("bookings")
