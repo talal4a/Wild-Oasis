@@ -17,14 +17,27 @@ export default function useBookings() {
   const [field, direction] = sortByRaw.split("-");
   const sortBy = { field, direction };
   
+  console.log("useBookings params:", { filter, sortBy });
+  
   const {
     isLoading,
     data: bookings,
     error,
   } = useQuery({
     queryKey: ["bookings", filter, sortBy],
-    queryFn: () => getBookings({ filter, sortBy }),
+    queryFn: async () => {
+      console.log("Fetching bookings...");
+      try {
+        const data = await getBookings({ filter, sortBy });
+        console.log("Bookings data:", data);
+        return data;
+      } catch (err) {
+        console.error("Error fetching bookings:", err);
+        throw err;
+      }
+    },
   });
   
+  console.log("useBookings hook state:", { isLoading, bookings, error });
   return { isLoading, bookings: bookings || [], error };
 }

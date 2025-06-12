@@ -30,8 +30,41 @@ async function deleteBookings() {
 }
 
 async function createGuests() {
-  const { error } = await supabase.from("guests").insert(guests);
-  if (error) throw new Error(error.message);
+  try {
+    console.log("Checking guests table schema...");
+    // Get the schema information for the guests table
+    const { data: schema, error: schemaError } = await supabase
+      .from('guests')
+      .select('*')
+      .limit(0);
+      
+    if (schemaError) {
+      console.error("Error fetching schema:", schemaError);
+      throw new Error(schemaError.message);
+    }
+    
+    // Log the available columns
+    console.log("Available columns in guests table:", Object.keys(schema?.length > 0 ? schema[0] : {}));
+    
+    // Create a modified version of guests data without the nationalID field
+    const modifiedGuests = guests.map(({ nationalID, ...rest }) => {
+      // If nationalID is needed, we could rename it to a field that exists in the DB
+      // For example, if there's an "identificationNumber" field instead:
+      // return { ...rest, identificationNumber: nationalID };
+      
+      // Or just return without the nationalID field
+      return rest;
+    });
+    
+    console.log("Inserting guests data without nationalID field");
+    const { error } = await supabase.from("guests").insert(modifiedGuests);
+    if (error) throw new Error(error.message);
+    
+    console.log("Successfully inserted guests data");
+  } catch (err) {
+    console.error("Error in createGuests:", err);
+    throw err;
+  }
 }
 
 async function createCabins() {
@@ -112,27 +145,57 @@ async function createBookings() {
 
 function Uploader() {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   async function uploadAll() {
     setIsLoading(true);
-    // Bookings need to be deleted FIRST
-    await deleteBookings();
-    await deleteGuests();
-    await deleteCabins();
+    setError(null);
+    
+    try {
+      console.log("Starting data upload process...");
+      
+      // Bookings need to be deleted FIRST
+      console.log("Deleting existing bookings...");
+      await deleteBookings();
+      
+      console.log("Deleting existing guests...");
+      await deleteGuests();
+      
+      console.log("Deleting existing cabins...");
+      await deleteCabins();
 
-    // Guests and cabins need to be created BEFORE bookings
-    await createGuests();
-    await createCabins();
-    await createBookings();
-
-    setIsLoading(false);
+      // Guests and cabins need to be created BEFORE bookings
+      console.log("Creating guests...");
+      await createGuests();
+      
+      console.log("Creating cabins...");
+      await createCabins();
+      
+      console.log("Creating bookings...");
+      await createBookings();
+      
+      console.log("All data uploaded successfully!");
+    } catch (err) {
+      console.error("Error during data upload:", err);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   async function uploadBookings() {
     setIsLoading(true);
-    await deleteBookings();
-    await createBookings();
-    setIsLoading(false);
+    setError(null);
+    
+    try {
+      await deleteBookings();
+      await createBookings();
+    } catch (err) {
+      console.error("Error uploading bookings:", err);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -157,6 +220,18 @@ function Uploader() {
       <Button onClick={uploadBookings} disabled={isLoading}>
         Upload bookings ONLY
       </Button>
+      
+      {error && (
+        <p style={{ color: "red", fontSize: "1.4rem", margin: "0.5rem 0" }}>
+          Error: {error}
+        </p>
+      )}
+      
+      {isLoading && (
+        <p style={{ color: "blue", fontSize: "1.4rem", margin: "0.5rem 0" }}>
+          Loading... Please wait
+        </p>
+      )}
     </div>
   );
 }

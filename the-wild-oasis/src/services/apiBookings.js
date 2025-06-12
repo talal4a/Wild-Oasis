@@ -3,54 +3,66 @@ import supabase from "./supaBase";
 import { bookings } from "../data/data-bookings";
 import { guests as mockGuests } from "../data/data-guests";
 export async function getBookings({ filter, sortBy } = {}) {
-  let query = supabase.from("bookings").select("*, cabins(*), guests(*)");
+  console.log("Connecting to Supabase to fetch bookings...");
+  console.log("Query params:", { filter, sortBy });
   
-  // Apply filter if provided
-  if (filter) {
-    query = query.eq(filter.field, filter.value);
-  }
-  
-  // Apply sorting if provided
-  if (sortBy) {
-    const { field, direction } = sortBy;
-    query = query.order(field, { ascending: direction === "asc" });
-  }
-  
-  const { data, error } = await query;
-  
-  if (error) {
-    console.error("Error fetching bookings:", error);
-    throw new Error("Bookings could not be loaded");
-  }
-  
-  // If we have data but the guest information is missing, add it from mock data
-  if (data && data.length > 0) {
-    const enhancedData = data.map((booking) => {
-      // Process guests data
-      if (Array.isArray(booking.guests) && booking.guests.length > 0) {
-        booking.guests = booking.guests[0];
-      } else if (!booking.guests || Object.keys(booking.guests).length === 0) {
-        const mockGuest = booking.guestId && booking.guestId <= mockGuests.length
-          ? mockGuests[booking.guestId - 1]
-          : { fullName: "Unknown Guest", email: "-" };
-        
-        booking.guests = mockGuest;
-      }
-      
-      // Process cabins data
-      if (Array.isArray(booking.cabins) && booking.cabins.length > 0) {
-        booking.cabins = booking.cabins[0];
-      } else if (!booking.cabins || Object.keys(booking.cabins).length === 0) {
-        booking.cabins = { name: `Cabin ${booking.cabinId || "Unknown"}` };
-      }
-      
-      return booking;
-    });
+  try {
+    let query = supabase.from("bookings").select("*, cabins(*), guests(*)");
     
-    return enhancedData;
+    // Apply filter if provided
+    if (filter) {
+      query = query.eq(filter.field, filter.value);
+    }
+    
+    // Apply sorting if provided
+    if (sortBy) {
+      const { field, direction } = sortBy;
+      query = query.order(field, { ascending: direction === "asc" });
+    }
+    
+    console.log("Executing Supabase query...");
+    const { data, error } = await query;
+    
+    if (error) {
+      console.error("Supabase error:", error);
+      throw new Error("Bookings could not be loaded");
+    }
+    
+    console.log(`Successfully fetched ${data?.length || 0} bookings`);
+    
+    // If we have data but the guest information is missing, add it from mock data
+    if (data && data.length > 0) {
+      console.log("Processing booking data to ensure complete guest information");
+      const enhancedData = data.map((booking) => {
+        // Process guests data
+        if (Array.isArray(booking.guests) && booking.guests.length > 0) {
+          booking.guests = booking.guests[0];
+        } else if (!booking.guests || Object.keys(booking.guests).length === 0) {
+          const mockGuest = booking.guestId && booking.guestId <= mockGuests.length
+            ? mockGuests[booking.guestId - 1]
+            : { fullName: "Unknown Guest", email: "-" };
+          
+          booking.guests = mockGuest;
+        }
+        
+        // Process cabins data
+        if (Array.isArray(booking.cabins) && booking.cabins.length > 0) {
+          booking.cabins = booking.cabins[0];
+        } else if (!booking.cabins || Object.keys(booking.cabins).length === 0) {
+          booking.cabins = { name: `Cabin ${booking.cabinId || "Unknown"}` };
+        }
+        
+        return booking;
+      });
+      
+      return enhancedData;
+    }
+    
+    return data || [];
+  } catch (err) {
+    console.error("Error in getBookings:", err);
+    throw new Error(`Failed to fetch bookings: ${err.message}`);
   }
-  
-  return data || [];
 }
 
 export async function getBooking(id) {
@@ -168,35 +180,100 @@ export async function deleteBooking(id) {
 }
 
 export async function createBookings() {
-  // Fetch all guests with their emails and IDs
-  const { data: guestsData } = await supabase
-    .from("guests")
-    .select("id, email");
+  try {
+    console.log("Starting to create bookings...");
+    
+    // Fetch all guests with their emails and IDs
+    const { data: guestsData, error: guestsError } = await supabase
+      .from("guests")
+      .select("id, email, fullName");
+      
+    if (guestsError) {
+      console.error("Error fetching guests:", guestsError);
+      throw new Error("Could not fetch guests data");
+    }
+    
+    console.log(`Found ${guestsData?.length || 0} guests in database`);
 
-  // Fetch all cabins with their names and IDs (if needed)
-  const { data: cabinsData } = await supabase.from("cabins").select("id, name");
+    // Fetch all cabins with their names and IDs
+    const { data: cabinsData, error: cabinsError } = await supabase
+      .from("cabins")
+      .select("id, name");
+      
+    if (cabinsError) {
+      console.error("Error fetching cabins:", cabinsError);
+      throw new Error("Could not fetch cabins data");
+    }
+    
+    console.log(`Found ${cabinsData?.length || 0} cabins in database`);
+    
+    // If we don't have any guests or cabins, we can't create bookings
+    if (!guestsData?.length || !cabinsData?.length) {
+      console.error("No guests or cabins found in database");
+      throw new Error("No guests or cabins found. Please upload them first.");
+    }
 
-  const finalBookings = bookings.map((booking) => {
-    // Find the guest by email (assuming your mock data has guestEmail)
-    const guest = guestsData.find((g) => g.email === booking.guestEmail);
-    // Find the cabin by name or other unique field if needed
-    // const cabin = cabinsData.find(c => c.name === booking.cabinName);
+    // Map mock guests to database guests by matching emails
+    const guestMap = {};
+    mockGuests.forEach((mockGuest, index) => {
+      // Find the corresponding guest in the database
+      const dbGuest = guestsData.find(g => g.email === mockGuest.email);
+      if (dbGuest) {
+        guestMap[index + 1] = dbGuest.id;
+      }
+    });
+    
+    console.log("Guest mapping:", guestMap);
 
-    // ...calculate numNights, prices, status as before...
+    // Process bookings to ensure they have the correct guestId and cabinId
+    const finalBookings = bookings.map((booking) => {
+      // Get the guestId from our mapping or use a random guest if not found
+      const guestId = guestMap[booking.guestId] || 
+        guestsData[Math.floor(Math.random() * guestsData.length)].id;
+      
+      // Make sure we have a valid cabinId
+      let cabinId = booking.cabinId;
+      if (!cabinsData.some(c => c.id === cabinId)) {
+        // If the cabinId doesn't exist, use a random one
+        cabinId = cabinsData[Math.floor(Math.random() * cabinsData.length)].id;
+      }
+      
+      // Calculate the cabin price (assume $100 per night as base price)
+      const numNights = (new Date(booking.endDate) - new Date(booking.startDate)) / 
+        (1000 * 60 * 60 * 24);
+      const cabinPrice = numNights * 100;
+      
+      // Calculate extras price for breakfast
+      const extrasPrice = booking.hasBreakfast ? numNights * 15 * booking.numGuests : 0;
+      
+      // Calculate total price
+      const totalPrice = cabinPrice + extrasPrice;
 
-    return {
-      ...booking,
-      guestId: guest ? guest.id : null,
-      // cabinId: cabin ? cabin.id : null,
-      // ...other fields...
-    };
-  });
+      return {
+        ...booking,
+        guestId,
+        cabinId,
+        cabinPrice,
+        extrasPrice,
+        totalPrice,
+        numNights,
+      };
+    });
+    
+    console.log(`Prepared ${finalBookings.length} bookings for insertion`);
 
-  // Filter out bookings with missing guestId (optional, for safety)
-  const validBookings = finalBookings.filter((b) => b.guestId);
-
-  const { error } = await supabase.from("bookings").insert(validBookings);
-  if (error) {
-    throw new Error(`Failed to create bookings: ${error.message}`);
+    // Insert the bookings
+    const { data, error } = await supabase.from("bookings").insert(finalBookings);
+    
+    if (error) {
+      console.error("Error inserting bookings:", error);
+      throw new Error(`Failed to create bookings: ${error.message}`);
+    }
+    
+    console.log("Successfully created bookings!");
+    return data;
+  } catch (err) {
+    console.error("Error in createBookings:", err);
+    throw new Error(`Failed to create bookings: ${err.message}`);
   }
 }

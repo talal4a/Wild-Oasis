@@ -5,28 +5,50 @@ import Table from "./../../ui/Table";
 import Menus from "../../ui/Menus";
 import { useSearchParams } from "react-router-dom";
 import Empty from "./../../ui/Empty";
+
 export default function CabinTable() {
   const { isLoading, cabin } = useCabin();
   const [searchParams] = useSearchParams();
+  
   if (isLoading) {
     return <Spinner />;
   }
-  if (!cabin.length) return <Empty resourceName="Cabin" />;
+  
+  if (!cabin || !cabin.length) {
+    return <Empty resourceName="Cabin" />;
+  }
+  
+  console.log("Raw cabin data:", cabin);
+  
+  // Process cabin data to ensure all required fields are present
+  const processedCabins = cabin.map(cabinItem => {
+    return {
+      id: cabinItem.id,
+      name: cabinItem.name || "Unnamed Cabin",
+      maxCapacity: cabinItem.maxCapacity || 1,
+      regularPrice: cabinItem.regularPrice || 0,
+      discount: cabinItem.discount || 0,
+      image: cabinItem.image || "",
+      description: cabinItem.description || ""
+    };
+  });
+  
   //Filter
   const filterValue = searchParams.get("discount") || "all";
   let filterCabins;
-  if (filterValue === "all") filterCabins = cabin;
+  if (filterValue === "all") filterCabins = processedCabins;
   if (filterValue === "no-discount")
-    filterCabins = cabin.filter((cabin) => cabin.discount === 0);
+    filterCabins = processedCabins.filter((cabin) => cabin.discount === 0);
   if (filterValue === "with-discount")
-    filterCabins = cabin.filter((cabin) => cabin.discount > 0);
+    filterCabins = processedCabins.filter((cabin) => cabin.discount > 0);
+    
   //SortBY
   const sortBy = searchParams.get("sortBy") || "startDate-asc";
   const [field, direction] = sortBy.split("-");
   const modifier = direction === "asc" ? 1 : -1;
   const sortedCabins = [...filterCabins].sort((a, b) => {
-    const aValue = a[field];
-    const bValue = b[field];
+    const aValue = a[field] || 0;
+    const bValue = b[field] || 0;
     if (typeof aValue === "string") {
       return aValue.localeCompare(bValue) * modifier;
     }
@@ -35,6 +57,8 @@ export default function CabinTable() {
     }
     return (aValue - bValue) * modifier;
   });
+  
+  console.log("Processed and sorted cabins:", sortedCabins);
 
   return (
     <Menus>

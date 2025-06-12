@@ -5,6 +5,7 @@ import Empty from "./../../ui/Empty";
 import useBookings from "./useBookings";
 import Spinner from "./../../ui/Spinner";
 import { guests as mockGuests } from "../../data/data-guests";
+
 function BookingTable() {
   const { bookings, isLoading } = useBookings();
   
@@ -14,45 +15,56 @@ function BookingTable() {
   // Process bookings to ensure guest data is in the correct format
   const processedBookings = bookings.map(booking => {
     // Log the raw booking data to see its structure
-    console.log("Raw booking:", booking);
+    console.log("Raw booking data:", booking);
     
-    // Try to find the guest by ID from the mock data
-    // This is a fallback if the API join doesn't work
-    const mockGuest = booking.guestId 
-      ? mockGuests.find((_, index) => index + 1 === booking.guestId) 
-      : null;
-    // Handle different possible structures of guest data
+    // Handle guest data
     let guestData = booking.guests;
     
     // If guests is an array, extract the first item
     if (Array.isArray(guestData) && guestData.length > 0) {
-      guestData = {
-        fullName: guestData[0].fullName,
-        email: guestData[0].email
-      };
+      guestData = guestData[0];
     } 
-    // If guests is null/undefined or empty, use mock data
-    else if (!guestData || !guestData.fullName) {
+    // If guests is null/undefined or empty object
+    else if (!guestData || Object.keys(guestData || {}).length === 0) {
+      // Try to find the guest by ID from the mock data
+      const mockGuest = booking.guestId && booking.guestId <= mockGuests.length
+        ? mockGuests[booking.guestId - 1]
+        : null;
+        
       guestData = mockGuest || {
         fullName: "Unknown Guest",
-        email: "-"
+        email: "guest@example.com"
       };
     }
     
-    // Same for cabin data
+    // Handle cabin data
     let cabinData = booking.cabins;
+    
+    // If cabins is an array, extract the first item
     if (Array.isArray(cabinData) && cabinData.length > 0) {
-      cabinData = { name: cabinData[0].name };
-    } else if (!cabinData) {
-      cabinData = { name: `Cabin ${booking.cabinId || "Unknown"}` };
+      cabinData = cabinData[0];
+    }
+    // If cabins is null/undefined or empty object
+    else if (!cabinData || Object.keys(cabinData || {}).length === 0) {
+      cabinData = { 
+        name: `Cabin ${booking.cabinId || "Unknown"}`,
+        maxCapacity: booking.numGuests || 1
+      };
     }
     
+    // Ensure we have totalPrice (default to 0 if missing)
+    const totalPrice = booking.totalPrice || 0;
+    
+    // Create a processed booking object with all required fields
     return {
       ...booking,
       guests: guestData,
-      cabins: cabinData
+      cabins: cabinData,
+      totalPrice
     };
   });
+  
+  console.log("Processed bookings:", processedBookings);
 
   return (
     <Menus>
