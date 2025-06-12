@@ -39,7 +39,6 @@ function BookingRow({ booking }) {
     guests,
     cabins,
   } = booking;
-  // These are now guaranteed to be objects with the right properties
   const guestName = guests?.fullName || "Unknown guest";
   const email = guests?.email || "-";
   const cabinName = cabins?.name || "Unknown cabin";
