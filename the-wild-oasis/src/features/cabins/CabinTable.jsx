@@ -18,8 +18,6 @@ export default function CabinTable() {
     return <Empty resourceName="Cabin" />;
   }
   
-  console.log("Raw cabin data:", cabin);
-  
   // Process cabin data to ensure all required fields are present
   const processedCabins = cabin.map(cabinItem => {
     return {
@@ -57,8 +55,6 @@ export default function CabinTable() {
     }
     return (aValue - bValue) * modifier;
   });
-  
-  console.log("Processed and sorted cabins:", sortedCabins);
 
   return (
     <Menus>

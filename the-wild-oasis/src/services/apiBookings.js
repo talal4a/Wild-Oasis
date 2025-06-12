@@ -3,10 +3,17 @@ import supabase from "./supaBase";
 import { bookings } from "../data/data-bookings";
 import { guests as mockGuests } from "../data/data-guests";
 export async function getBookings({ filter, sortBy } = {}) {
-  console.log("Connecting to Supabase to fetch bookings...");
-  console.log("Query params:", { filter, sortBy });
-  
   try {
+    // First, get all guests for reference
+    const { data: allGuests, error: guestsError } = await supabase
+      .from("guests")
+      .select("id, fullName, email");
+      
+    if (guestsError) {
+      throw new Error("Guests could not be loaded");
+    }
+    
+    // Now fetch bookings with their related data
     let query = supabase.from("bookings").select("*, cabins(*), guests(*)");
     
     // Apply filter if provided
@@ -17,42 +24,69 @@ export async function getBookings({ filter, sortBy } = {}) {
     // Apply sorting if provided
     if (sortBy) {
       const { field, direction } = sortBy;
-      query = query.order(field, { ascending: direction === "asc" });
+      query = query.order(field, { ascending: sortBy.direction === "asc" });
     }
     
-    console.log("Executing Supabase query...");
     const { data, error } = await query;
     
     if (error) {
-      console.error("Supabase error:", error);
       throw new Error("Bookings could not be loaded");
     }
     
-    console.log(`Successfully fetched ${data?.length || 0} bookings`);
-    
-    // If we have data but the guest information is missing, add it from mock data
+    // If we have data, process it to ensure complete information
     if (data && data.length > 0) {
-      console.log("Processing booking data to ensure complete guest information");
       const enhancedData = data.map((booking) => {
         // Process guests data
-        if (Array.isArray(booking.guests) && booking.guests.length > 0) {
-          booking.guests = booking.guests[0];
-        } else if (!booking.guests || Object.keys(booking.guests).length === 0) {
-          const mockGuest = booking.guestId && booking.guestId <= mockGuests.length
-            ? mockGuests[booking.guestId - 1]
-            : { fullName: "Unknown Guest", email: "-" };
+        let guestData = booking.guests;
+        
+        // If guests is an array, extract the first item
+        if (Array.isArray(guestData) && guestData.length > 0) {
+          guestData = guestData[0];
+        } 
+        // If guests is null/undefined/empty but we have a guestId
+        else if ((!guestData || Object.keys(guestData || {}).length === 0) && booking.guestId) {
+          // Try to find the guest in our reference list
+          const foundGuest = allGuests?.find(g => g.id === booking.guestId);
           
-          booking.guests = mockGuest;
+          if (foundGuest) {
+            guestData = foundGuest;
+          } else {
+            // Fall back to mock data
+            const mockGuest = booking.guestId && booking.guestId <= mockGuests.length
+              ? mockGuests[booking.guestId - 1]
+              : null;
+              
+            guestData = mockGuest || { 
+              fullName: "Unknown Guest", 
+              email: `guest-${booking.id}@example.com` 
+            };
+          }
         }
         
         // Process cabins data
-        if (Array.isArray(booking.cabins) && booking.cabins.length > 0) {
-          booking.cabins = booking.cabins[0];
-        } else if (!booking.cabins || Object.keys(booking.cabins).length === 0) {
-          booking.cabins = { name: `Cabin ${booking.cabinId || "Unknown"}` };
+        let cabinData = booking.cabins;
+        
+        // If cabins is an array, extract the first item
+        if (Array.isArray(cabinData) && cabinData.length > 0) {
+          cabinData = cabinData[0];
+        } 
+        // If cabins is null/undefined/empty
+        else if (!cabinData || Object.keys(cabinData || {}).length === 0) {
+          cabinData = { 
+            name: `Cabin ${booking.cabinId || "Unknown"}`,
+            maxCapacity: booking.numGuests || 1
+          };
         }
         
-        return booking;
+        // Ensure we have a totalPrice
+        const totalPrice = booking.totalPrice || 0;
+        
+        return {
+          ...booking,
+          guests: guestData,
+          cabins: cabinData,
+          totalPrice
+        };
       });
       
       return enhancedData;
@@ -60,48 +94,26 @@ export async function getBookings({ filter, sortBy } = {}) {
     
     return data || [];
   } catch (err) {
-    console.error("Error in getBookings:", err);
     throw new Error(`Failed to fetch bookings: ${err.message}`);
   }
 }
 
 export async function getBooking(id) {
-  const { data, error } = await supabase
-    .from("bookings")
-    .select("*, cabins(*), guests(*)")
-    .eq("id", id)
-    .single();
-    
-  if (error) {
-    console.error("Error fetching booking:", error);
-    throw new Error("Booking not found");
-  }
+  try {
+    const { data, error } = await supabase
+      .from("bookings")
+      .select("*, cabins(*), guests(*)")
+      .eq("id", id)
+      .single();
 
-  // Process the data to ensure consistent structure
-  if (data) {
-    // Handle guests data
-    if (Array.isArray(data.guests) && data.guests.length > 0) {
-      data.guests = data.guests[0];
-    } else if (!data.guests) {
-      // Try to find a guest from mock data
-      const mockGuest = data.guestId && data.guestId <= mockGuests.length
-        ? mockGuests[data.guestId - 1]
-        : { fullName: "Unknown Guest", email: "-" };
-      
-      data.guests = mockGuest;
+    if (error) {
+      throw new Error("Booking not found");
     }
-    
-    // Handle cabins data
-    if (Array.isArray(data.cabins) && data.cabins.length > 0) {
-      data.cabins = data.cabins[0];
-    } else if (!data.cabins) {
-      data.cabins = { name: `Cabin ${data.cabinId || "Unknown"}` };
-    }
-    
-    console.log("Processed booking data:", data);
-  }
 
-  return data;
+    return data;
+  } catch (err) {
+    throw new Error(`Failed to fetch booking: ${err.message}`);
+  }
 }
 
 // Returns all BOOKINGS that are were created after the given date. Useful to get bookings created in the last 30 days, for example.
@@ -277,3 +289,5 @@ export async function createBookings() {
     throw new Error(`Failed to create bookings: ${err.message}`);
   }
 }
+
+

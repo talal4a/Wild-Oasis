@@ -13,23 +13,6 @@ import AppLayout from "./ui/AppLayout";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
-import supabase from "./services/supaBase";
-import { useEffect } from "react";
-
-// Test Supabase connection
-async function testSupabaseConnection() {
-  console.log("Testing Supabase connection...");
-  try {
-    const { data, error } = await supabase.from("cabins").select("count");
-    if (error) {
-      console.error("Supabase connection error:", error);
-    } else {
-      console.log("Supabase connection successful! Count:", data);
-    }
-  } catch (err) {
-    console.error("Error testing Supabase connection:", err);
-  }
-}
 
 const queryClients = new QueryClient({
   defaultOptions: {
@@ -39,10 +22,6 @@ const queryClients = new QueryClient({
   },
 });
 export default function App() {
-  useEffect(() => {
-    testSupabaseConnection();
-  }, []);
-
   return (
     <QueryClientProvider client={queryClients}>
       <ReactQueryDevtools initialIsOpen={false} />

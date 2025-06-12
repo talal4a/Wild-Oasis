@@ -5,6 +5,7 @@ import Empty from "./../../ui/Empty";
 import useBookings from "./useBookings";
 import Spinner from "./../../ui/Spinner";
 import { guests as mockGuests } from "../../data/data-guests";
+import Pagination from "../../ui/Pagination";
 
 function BookingTable() {
   const { bookings, isLoading } = useBookings();
@@ -14,9 +15,6 @@ function BookingTable() {
 
   // Process bookings to ensure guest data is in the correct format
   const processedBookings = bookings.map(booking => {
-    // Log the raw booking data to see its structure
-    console.log("Raw booking data:", booking);
-    
     // Handle guest data
     let guestData = booking.guests;
     
@@ -63,8 +61,6 @@ function BookingTable() {
       totalPrice
     };
   });
-  
-  console.log("Processed bookings:", processedBookings);
 
   return (
     <Menus>
@@ -83,6 +79,9 @@ function BookingTable() {
             <BookingRow key={booking.id} booking={booking} />
           )}
         />
+        <Table.Footer>
+          <Pagination count={15}/>
+        </Table.Footer>
       </Table>
     </Menus>
   );

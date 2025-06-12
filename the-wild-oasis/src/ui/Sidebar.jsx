@@ -2,7 +2,6 @@ import styled from "styled-components";
 import Logo from "./Logo.jsx";
 import MainNav from "./MainNav.jsx";
 import Uploader from "../data/Uploader.jsx";
-import CheckSchema from "../data/CheckSchema.jsx";
 
 const SideBar = styled.aside`
   background-color: var(--color-grey-0);
@@ -20,7 +19,6 @@ export default function Sidebar() {
       <Logo />
       <MainNav />
       <Uploader />
-      <CheckSchema />
     </SideBar>
   );
 }

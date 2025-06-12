@@ -7,19 +7,7 @@ export default function useCabin() {
     error,
   } = useQuery({
     queryKey: ["cabin"],
-    queryFn: async () => {
-      console.log("Fetching cabins...");
-      try {
-        const data = await getCabins();
-        console.log("Cabins data:", data);
-        return data;
-      } catch (err) {
-        console.error("Error fetching cabins:", err);
-        throw err;
-      }
-    },
+    queryFn: getCabins,
   });
-  
-  console.log("useCabin hook state:", { isLoading, cabin, error });
   return { isLoading, cabin, error };
 }

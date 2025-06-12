@@ -1,20 +1,14 @@
 import supabase, { supabaseUrl } from "./supaBase";
 export async function getCabins() {
-  console.log("Connecting to Supabase to fetch cabins...");
-  console.log("Supabase URL:", supabaseUrl);
-  
   try {
     let { data, error } = await supabase.from("cabins").select("*");
     
     if (error) {
-      console.error("Supabase error:", error);
       throw new Error("Cabins could not be loaded");
     }
     
-    console.log(`Successfully fetched ${data?.length || 0} cabins`);
     return data;
   } catch (err) {
-    console.error("Error in getCabins:", err);
     throw new Error(`Failed to fetch cabins: ${err.message}`);
   }
 }
