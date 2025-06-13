@@ -41,7 +41,7 @@ function BookingDetail() {
       <ButtonGroup>
         {status === "unconfirmed" && (
           <Button onClick={() => navigate(`/checkin/${bookingId}`)}>
-            Check in
+            Checked in
           </Button>
         )}
         <Button variation="secondary" onClick={moveBack}>
