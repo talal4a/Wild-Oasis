@@ -5,8 +5,9 @@ import Table from "../../ui/Table";
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
 import Menus from "../../ui/Menus";
-import { HiArrowDownOnSquare, HiEye } from "react-icons/hi2";
+import { HiArrowDownOnSquare, HiArrowUpOnSquare, HiEye } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
+import useCheckout from "../check-in-out/usecheckout";
 const Cabin = styled.div`
   font-size: 1.6rem;
   font-weight: 600;
@@ -42,6 +43,7 @@ function BookingRow({ booking }) {
     cabins,
   } = booking;
   const navigate = useNavigate();
+  const { checkout, isCheckingOut } = useCheckout();
   const guestName = guests?.fullName || "Unknown guest";
   const email = guests?.email || "-";
   const cabinName = cabins?.name || "Unknown cabin";
@@ -82,6 +84,17 @@ function BookingRow({ booking }) {
           >
             See details
           </Menus.Button>
+          {status === "checked-in" && (
+            <Menus.Button
+              icon={<HiArrowUpOnSquare />}
+              onClick={() => {
+                checkout({ bookingId });
+              }}
+              disabled={isCheckingOut}
+            >
+              Checked out
+            </Menus.Button>
+          )}
           {status === "unconfirmed" && (
             <Menus.Button
               icon={<HiArrowDownOnSquare />}
@@ -95,5 +108,4 @@ function BookingRow({ booking }) {
     </Table.Row>
   );
 }
-
 export default BookingRow;
