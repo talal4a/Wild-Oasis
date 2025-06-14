@@ -11,21 +11,24 @@ const Fullpage = styled.div`
   justify-content: center;
 `;
 export default function ProtectedRoute({ children }) {
-  //1.Load authenticated users
   const { isAuthenticated, isLoading } = useUser();
   const navigate = useNavigate();
-  //3.if there is no authenticated users,redirect to/the login
-  useEffect(function () {
-    if (!isAuthenticated && !isLoading) navigate("/login");
-  }, []);
-
-  //2.show a spinner
-  if (isLoading)
+  useEffect(() => {
+    if (!isAuthenticated && !isLoading) {
+      navigate("/login", { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+  if (isLoading) {
     return (
       <Fullpage>
-        <Spinner />;
+        <Spinner />
       </Fullpage>
     );
-  //4.if there is a user, render the app
-  if (isAuthenticated) return children;
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return children;
 }
