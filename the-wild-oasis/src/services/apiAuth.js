@@ -1,7 +1,9 @@
 import supabase from "./supaBase";
-export default async function apiAuth() {
+export default async function login({ email, password }) {
   let { data, error } = await supabase.auth.signInWithPassword({
-    email: "someone@email.com",
-    password: "srJCmJsKiqdvUIghZHpb",
+    email,
+    password,
   });
+  if (error) throw new Error(error.message);
+  return data;
 }
