@@ -4,17 +4,13 @@ import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
 import useUpdateUser from "./useUpdateuser";
-
 function UpdatePasswordForm() {
   const { register, handleSubmit, formState, getValues, reset } = useForm();
   const { errors } = formState;
-
   const { updateUser, isUpdating } = useUpdateUser();
-
   function onSubmit({ password }) {
     updateUser({ password }, { onSuccess: reset });
   }
-
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       <FormRow
@@ -35,7 +31,6 @@ function UpdatePasswordForm() {
           })}
         />
       </FormRow>
-
       <FormRow
         label="Confirm password"
         error={errors?.passwordConfirm?.message}
@@ -61,5 +56,4 @@ function UpdatePasswordForm() {
     </Form>
   );
 }
-
 export default UpdatePasswordForm;
