@@ -77,7 +77,12 @@ function SignupForm() {
       </FormRow>
 
       <FormRow>
-        <Button variation="secondary" type="reset" disabled={isLoading}>
+        <Button
+          onClick={reset}
+          variation="secondary"
+          type="reset"
+          disabled={isLoading}
+        >
           Cancel
         </Button>
         <Button>Create new user</Button>
@@ -85,5 +90,4 @@ function SignupForm() {
     </Form>
   );
 }
-
 export default SignupForm;

@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import useUser from "./useUser";
+
 const StyledUserAvatar = styled.div`
   display: flex;
   gap: 1.2rem;
@@ -8,6 +9,7 @@ const StyledUserAvatar = styled.div`
   font-size: 1.4rem;
   color: var(--color-grey-600);
 `;
+
 const Avatar = styled.img`
   display: block;
   width: 4rem;
@@ -21,12 +23,16 @@ const Avatar = styled.img`
 
 export default function UserAvatar() {
   const { user } = useUser();
+  
+  if (!user) return null;
+  
   const { fullName, avatar } = user.user_metadata;
+  
   return (
     <StyledUserAvatar>
       <Avatar
         src={avatar || "logo-light.png"}
-        alt={`Avatar of the ${fullName}`}
+        alt={`Avatar of ${fullName}`}
       />
       <span>{fullName}</span>
     </StyledUserAvatar>
