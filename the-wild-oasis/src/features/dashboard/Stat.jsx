@@ -56,5 +56,4 @@ function Stat({ icon, title, value, color }) {
     </StyledStat>
   );
 }
-
 export default Stat;

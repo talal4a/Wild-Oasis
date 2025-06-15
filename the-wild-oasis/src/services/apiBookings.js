@@ -108,7 +108,6 @@ export async function getBooking(id) {
     throw new Error(`Failed to fetch booking: ${err.message}`);
   }
 }
-
 export async function getBookingsAfterDate(date) {
   const { data, error } = await supabase
     .from("bookings")
