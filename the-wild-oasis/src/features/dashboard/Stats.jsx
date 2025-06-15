@@ -6,24 +6,33 @@ import {
   HiOutlineChartBar,
 } from "react-icons/hi2";
 
-export default function Stats({ bookings = [], confirmedStays = [] }) {
-  // Total number of bookings
+export default function Stats({
+  bookings = [],
+  confirmedStays = [],
+  numDays = 7,
+  cabinCount = 1,
+}) {
   const numBookings = bookings.length;
-
-  // Total number of confirmed stays
   const numConfirmedStays = confirmedStays.length;
 
-  // Calculate total sales from confirmed stays
   const totalSales = confirmedStays.reduce(
     (sum, stay) => sum + stay.totalPrice,
     0
   );
 
-  // Calculate occupancy rate (% of confirmed bookings out of total bookings)
+  const totalNights = confirmedStays.reduce(
+    (acc, cur) => acc + cur.numNights,
+    0
+  );
+
   const occupancyRate =
-    bookings.length > 0
-      ? Math.round((confirmedStays.length / bookings.length) * 100)
-      : 0;
+    confirmedStays.reduce((acc, cur) => acc + cur.numNights, 0) /
+    (numDays * cabinCount);
+
+  const formattedSales = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(totalSales);
 
   return (
     <>
@@ -34,7 +43,7 @@ export default function Stats({ bookings = [], confirmedStays = [] }) {
         value={numBookings}
       />
       <Stat
-        title="Stays"
+        title="Check-in"
         color="green"
         icon={<HiOutlineCalendarDays />}
         value={numConfirmedStays}
@@ -43,13 +52,13 @@ export default function Stats({ bookings = [], confirmedStays = [] }) {
         title="Sales"
         color="indigo"
         icon={<HiOutlineCurrencyDollar />}
-        value={`$${totalSales}`}
+        value={formattedSales}
       />
       <Stat
         title="Occupancy Rate"
         color="yellow"
         icon={<HiOutlineChartBar />}
-        value={`${occupancyRate}%`}
+        value={`${Math.round(occupancyRate)}%`}
       />
     </>
   );
