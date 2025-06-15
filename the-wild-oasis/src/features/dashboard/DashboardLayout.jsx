@@ -10,13 +10,11 @@ const StyledDashboardLayout = styled.div`
   grid-template-rows: auto 34rem auto;
   gap: 2.4rem;
 `;
-
 export default function DashboardLayout() {
   const { stays, confirmedStays, isLoading2 } = useRecentStays();
   const { isLoading1, bookings, numDays } = useRecentBookings();
   const { isLoading3, cabins } = useCabin();
   if (isLoading1 || isLoading2 || isLoading3) return <Spinner />;
-  console.log(bookings);
 
   return (
     <StyledDashboardLayout>
