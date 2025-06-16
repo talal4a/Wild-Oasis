@@ -55,9 +55,9 @@ const Button = styled.button`
   box-shadow: var(--shadow-sm);
   cursor: pointer;
   transition: all 0.2s ease;
-  height: ${(props) => (props.size === "small" ? "auto" : "5rem")};
-  ${(props) => sizes[props.size || "medium"]};
-  ${(props) => variations[props.variation || "primary"]};
+  height: ${(props) => (props.$size === "small" ? "auto" : "5rem")};
+  ${(props) => sizes[props.$size || "medium"]};
+  ${(props) => variations[props.$variation || "primary"]};
   ${(props) =>
     props.fullwidth &&
     css`

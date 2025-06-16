@@ -77,12 +77,7 @@ function SignupForm() {
       </FormRow>
 
       <FormRow>
-        <Button
-          onClick={reset}
-          variation="secondary"
-          type="reset"
-          disabled={isLoading}
-        >
+        <Button $variation="secondary" type="reset">
           Cancel
         </Button>
         <Button>Create new user</Button>

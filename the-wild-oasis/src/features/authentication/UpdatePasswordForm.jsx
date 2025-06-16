@@ -4,13 +4,26 @@ import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
 import useUpdateUser from "./useUpdateuser";
+import { useNavigate } from "react-router-dom";
+
 function UpdatePasswordForm() {
   const { register, handleSubmit, formState, getValues, reset } = useForm();
   const { errors } = formState;
   const { updateUser, isUpdating } = useUpdateUser();
+  const navigate = useNavigate();
+
   function onSubmit({ password }) {
-    updateUser({ password }, { onSuccess: reset });
+    updateUser(
+      { password },
+      {
+        onSuccess: () => {
+          reset();
+          navigate("/login");
+        },
+      }
+    );
   }
+
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       <FormRow
@@ -48,7 +61,7 @@ function UpdatePasswordForm() {
         />
       </FormRow>
       <FormRow>
-        <Button onClick={reset} type="reset" variation="secondary">
+        <Button onClick={reset} type="reset" $variation="secondary">
           Cancel
         </Button>
         <Button disabled={isUpdating}>Update password</Button>

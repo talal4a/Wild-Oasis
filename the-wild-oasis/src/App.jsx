@@ -30,7 +30,7 @@ export default function App() {
       <QueryClientProvider client={queryClients}>
         <ReactQueryDevtools initialIsOpen={false} />
         <GlobalStyle />
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
           <Routes>
             <Route
               element={

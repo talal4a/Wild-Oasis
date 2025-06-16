@@ -124,7 +124,7 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModel }) {
       </FormRow>
       <FormRow type="buttons">
         <Button
-          variation="primary"
+          $variation="primary"
           type="reset"
           onClick={() => {
             onCloseModel();

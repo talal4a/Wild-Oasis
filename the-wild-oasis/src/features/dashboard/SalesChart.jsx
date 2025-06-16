@@ -27,9 +27,6 @@ const StyledSalesChart = styled(DashboardBox)`
 export default function SalesChart({ bookings = [], numDays }) {
   const { isDarkMode } = useDarkMode();
 
-  console.log("Received bookings:", bookings);
-  console.log("Number of days:", numDays);
-
   // If no bookings data, show empty state
   if (!bookings || bookings.length === 0) {
     return (
@@ -47,21 +44,10 @@ export default function SalesChart({ bookings = [], numDays }) {
     end: new Date(),
   });
 
-  console.log("Date range:", {
-    start: allDates[0],
-    end: allDates[allDates.length - 1],
-  });
-
   const data = allDates.map((date) => {
     const bookingsForDate = bookings.filter((booking) => {
       const bookingDate = new Date(booking.startDate);
       const isMatch = isSameDay(date, bookingDate);
-      if (isMatch) {
-        console.log("Found matching booking:", {
-          date: format(date, "MMM dd"),
-          booking: booking,
-        });
-      }
       return isMatch;
     });
 
@@ -80,8 +66,6 @@ export default function SalesChart({ bookings = [], numDays }) {
       extrasSales,
     };
   });
-
-  console.log("Processed chart data:", data);
 
   const colors = isDarkMode
     ? {

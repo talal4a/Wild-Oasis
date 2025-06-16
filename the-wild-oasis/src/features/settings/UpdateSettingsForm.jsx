@@ -96,7 +96,7 @@ function UpdateSettingsForm() {
         />
       </FormRow>
       <FormRow>
-        <Button type="reset" variation="secondary" onClick={() => reset()}>
+        <Button type="reset" $variation="secondary" onClick={() => reset()}>
           Cancel
         </Button>
         <Button disabled={isUpdating}>Update settings</Button>

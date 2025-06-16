@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Form from "../../ui/Form";
@@ -6,19 +6,29 @@ import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
 import useUser from "./useUser";
 import useUpdateUser from "./useUpdateuser";
+import { useNavigate } from "react-router-dom";
+import { useLogout } from "./useLogout";
 function UpdateUserDataForm() {
-  const {
-    user: {
-      email,
-      user_metadata: { fullName: currentFullName },
-    },
-  } = useUser();
+  const { user } = useUser();
   const { updateUser, isUpdating } = useUpdateUser();
+  const navigate = useNavigate();
+  const { logout } = useLogout();
+  const email = user?.email || "";
+  const currentFullName = user?.user_metadata?.fullName || "";
   const [fullName, setFullName] = useState(currentFullName);
   const [avatar, setAvatar] = useState(null);
+
+  // Sync state if user changes
+  useEffect(() => {
+    setFullName(currentFullName);
+  }, [currentFullName]);
+
+  if (!user) return null;
+
   function handleCancel() {
     setAvatar(null);
     setFullName(currentFullName);
+    navigate("/dashboard");
   }
   function handleSubmit(e) {
     e.preventDefault();
@@ -28,7 +38,7 @@ function UpdateUserDataForm() {
       {
         onSuccess: () => {
           setAvatar(null);
-          e.target.reset();
+          navigate("/dasboard");
         },
       }
     );
@@ -58,14 +68,16 @@ function UpdateUserDataForm() {
       </FormRow>
       <FormRow>
         <Button
-          type="reset"
-          variation="secondary"
-          disabled={isUpdating}
+          type="button"
+          $variation="secondary"
           onClick={handleCancel}
+          disabled={isUpdating}
         >
           Cancel
         </Button>
-        <Button disabled={isUpdating}>Update account</Button>
+        <Button disabled={isUpdating} type="submit">
+          Update account
+        </Button>
       </FormRow>
     </Form>
   );
