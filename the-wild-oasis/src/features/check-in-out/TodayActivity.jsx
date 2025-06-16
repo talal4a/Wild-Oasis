@@ -17,6 +17,7 @@ const StyledToday = styled.div`
   flex-direction: column;
   gap: 2.4rem;
   grid-column: 1 / span 2;
+  grid-row: 2;
   padding-top: 2.4rem;
 `;
 
@@ -40,13 +41,13 @@ const NoActivity = styled.p`
 `;
 
 function TodayActivity() {
-  const { activities, isloading } = useTodayActivity();
+  const { activities, isLoading } = useTodayActivity();
   return (
     <StyledToday>
       <Row type="horizontal">
         <Heading as="h2">Today</Heading>
       </Row>
-      {!isloading ? (
+      {!isLoading ? (
         activities?.length > 0 ? (
           <TodayList>
             {activities.map((activity) => (

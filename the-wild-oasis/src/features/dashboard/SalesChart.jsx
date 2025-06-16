@@ -16,6 +16,7 @@ import Spinner from "../../ui/Spinner";
 
 const StyledSalesChart = styled(DashboardBox)`
   grid-column: 1 / -1;
+  grid-row: 3;
 
   & .recharts-cartesian-grid-horizontal line,
   & .recharts-cartesian-grid-vertical line {
