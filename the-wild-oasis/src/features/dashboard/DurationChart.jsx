@@ -1,6 +1,14 @@
 import styled from "styled-components";
 import Heading from "../../ui/Heading";
-import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
+import {
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
+import { useDarkMode } from "../../context/DarkModeContext";
 
 const ChartBox = styled.div`
   /* Box */
@@ -33,17 +41,17 @@ const startDataLight = [
   },
   {
     duration: "3 nights",
-    value: 3,
+    value: 0,
     color: "#eab308",
   },
   {
     duration: "4-5 nights",
-    value: 5,
+    value: 0,
     color: "#84cc16",
   },
   {
     duration: "6-7 nights",
-    value: 4,
+    value: 0,
     color: "#22c55e",
   },
   {
@@ -58,7 +66,7 @@ const startDataLight = [
   },
   {
     duration: "21+ nights",
-    value: 2,
+    value: 0,
     color: "#a855f7",
   },
 ];
@@ -134,13 +142,17 @@ function prepareData(startData, stays) {
 }
 
 export default function DurationChart({ confirmedStays }) {
+  const { isDarkMode } = useDarkMode();
+  const startData = isDarkMode ? startDataDark : startDataLight;
+  if (!confirmedStays) return null;
+  const data = prepareData(startData, confirmedStays);
   return (
     <ChartBox>
       <Heading type="h2">Stay duration summary</Heading>
-      <ResponsiveContainer>
+      <ResponsiveContainer width="100%" height={240}>
         <PieChart>
           <Pie
-            data={startDataLight}
+            data={data}
             nameKey="duration"
             dataKey="value"
             innerRadius={85}
@@ -149,14 +161,25 @@ export default function DurationChart({ confirmedStays }) {
             cy="50%"
             paddingAngle={3}
           >
-            {startDataLight.map((entry) => {
-              <Cell
-                fill={entry.color}
-                stroke={entry.color}
-                key={entry.duration}
-              />;
+            {data.map((entry) => {
+              return (
+                <Cell
+                  fill={entry.color}
+                  stroke={entry.color}
+                  key={entry.duration}
+                />
+              );
             })}
           </Pie>
+          <Tooltip />
+          <Legend
+            verticalAlign="middle"
+            align="right"
+            width="30%"
+            layout="vertical"
+            iconSize={15}
+            iconType="circle"
+          />
         </PieChart>
       </ResponsiveContainer>
     </ChartBox>
