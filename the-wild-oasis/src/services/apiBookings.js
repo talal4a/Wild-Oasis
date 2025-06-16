@@ -110,7 +110,7 @@ export async function getBooking(id) {
 }
 export async function getBookingsAfterDate(date) {
   console.log("Fetching bookings after date:", date);
-  
+
   const { data, error } = await supabase
     .from("bookings")
     .select("*, cabins(*), guests(*)")
@@ -125,27 +125,30 @@ export async function getBookingsAfterDate(date) {
   console.log("Raw bookings data:", data);
 
   // Process the data to ensure we have the correct prices
-  const processedData = data.map(booking => {
+  const processedData = data.map((booking) => {
     // Calculate number of nights
     const numNights = Math.ceil(
-      (new Date(booking.endDate) - new Date(booking.startDate)) / (1000 * 60 * 60 * 24)
+      (new Date(booking.endDate) - new Date(booking.startDate)) /
+        (1000 * 60 * 60 * 24)
     );
-    
+
     // Calculate cabin price (base price per night)
     const cabinPrice = numNights * 100; // Assuming $100 per night as base price
-    
+
     // Calculate extras price (breakfast)
-    const extrasPrice = booking.hasBreakfast ? (numNights * 15 * booking.numGuests) : 0; // $15 per guest per night
-    
+    const extrasPrice = booking.hasBreakfast
+      ? numNights * 15 * booking.numGuests
+      : 0; // $15 per guest per night
+
     // Calculate total price
     const totalPrice = cabinPrice + extrasPrice;
-    
+
     return {
       ...booking,
       numNights,
       cabinPrice,
       extrasPrice,
-      totalPrice
+      totalPrice,
     };
   });
 
